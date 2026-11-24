@@ -4,7 +4,7 @@
 
 A dating app for the geek community: gamers, cosplayers, tabletop players, anime fans and superfans. People match on shared fandoms and break the ice by playing a game together.
 
-**Status:** Phase 1. Landing page, sign-up with an 18+ check, log-in, log-out, and a protected home page.
+**Status:** Phase 2. Sign-up with an 18+ check, log-in, and profiles: fandom picker, themed badges, about-me fields and photos.
 
 ## Tech
 
@@ -23,7 +23,8 @@ A dating app for the geek community: gamers, cosplayers, tabletop players, anime
 4. Click **Deploy**. You'll get a link like `thecon.vercel.app`.
 5. **Back in Supabase:** go to **Authentication > URL Configuration**. Set **Site URL** to your Vercel link, and add `https://YOUR-SITE.vercel.app/auth/callback` under **Redirect URLs**.
 6. Still in Supabase, open **Authentication > Emails > Confirm signup**. Replace `{{ .ConfirmationURL }}` with `{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=email` so the email link works on any device or browser.
-7. Visit your site, get a badge, and click the link in the confirmation email.
+7. **Set up the profile tables (Phase 2):** in Supabase, open **SQL Editor > New query**, paste everything from `supabase/phase2_profiles.sql`, and click **Run**. This creates the tables, the fandom list, the photo storage and the security rules. It's safe to run again.
+8. Visit your site, get a badge, and click the link in the confirmation email.
 
 Every push to `main` redeploys automatically.
 
@@ -45,17 +46,30 @@ For local testing, also add `http://localhost:3000/auth/callback` to Supabase's 
 | --- | --- |
 | `app/page.tsx` | Landing page |
 | `app/signup`, `app/login` | Sign-up (18+ check, code of conduct) and log-in |
-| `app/home` | Logged-in home (profile setup comes in Phase 2) |
+| `app/home` | Sends you to your badge, or to make one if you're new |
+| `app/profile` | Your badge page, plus `edit/` for the profile editor |
+| `components/Badge.tsx` | The themed convention badge |
+| `components/FandomPicker.tsx` | Category, fandom and fan-level dropdowns |
+| `components/PhotoManager.tsx` | Photo upload and removal |
+| `lib/themes.ts` | Badge theme list and fan levels |
+| `supabase/*.sql` | Database scripts to run in the Supabase SQL Editor |
 | `app/auth/actions.ts` | Sign-up, log-in and log-out logic |
 | `app/auth/callback` | Where the confirmation email link lands |
 | `lib/supabase/` | Supabase connection helpers |
 | `middleware.ts` | Keeps sessions fresh and guards `/home` |
 | `app/globals.css` | Colors, fonts and the comic-convention style |
 
+## Adding fandoms or badge themes
+
+- **New fandom:** in the Supabase SQL Editor, run
+  `insert into fandoms (name, category, sort) values ('Your Fandom', 'TV & Film', 99);`
+  Use an existing category name, or a new one to create a new dropdown group.
+- **New badge theme:** add it to `lib/themes.ts`, add a `.theme-<id>` block in `app/globals.css`, and add the id to the `badge_theme` check in the database.
+
 ## Roadmap
 
 1. ~~Setup: login and deploy~~
-2. Profiles: fandom tags, prompts, photos, identity options
+2. ~~Profiles: fandom picker, badge themes, about-me fields, photos~~
 3. Matching: shared-fandom score, Discover feed, matches
 4. Icebreakers: fandom trivia duel, then D&D and board games
 5. Safety + beta: block/report, moderation queue, code of conduct

@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { supabaseEnv } from "./env";
 
 // Pages that need you to be logged in.
-const PROTECTED_PREFIXES = ["/home"];
+const PROTECTED_PREFIXES = ["/home", "/profile"];
 
 // Keeps the login session fresh on every request and sends logged-out
 // visitors away from protected pages.

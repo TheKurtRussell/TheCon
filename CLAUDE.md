@@ -15,6 +15,9 @@ Comic-book convention style: thick `--ink` outlines, hard offset shadows, halfto
 Palette: ink #121212, paper #FFF6E5, red #D7263D, yellow #FFC914, blue #1B4DFF.
 Don't copy Comic-Con's or any other real convention's logo or branding.
 
+## Database changes
+Put each change in a new `supabase/phaseN_*.sql` that's safe to re-run. The owner pastes it into the Supabase SQL Editor.
+
 ## Rules that matter
 - 18+ only. Keep birthdate private and show age only.
 - Never commit secrets. Use `.env.local` and Vercel env vars. Never use the `service_role` key in the app.
@@ -24,7 +27,7 @@ Don't copy Comic-Con's or any other real convention's logo or branding.
 
 ## Phases
 1. Setup (done): auth, landing page, protected /home
-2. Profiles: tables profiles, fandoms, profile_fandoms (casual/fan/superfan), prompts, photos
+2. Profiles (done): supabase/phase2_profiles.sql. profiles (public fields + badge_theme), profile_private (birthdate, owner-only; others get age via profile_age()), fandoms (seeded, by category), profile_fandoms (level 1-3), photos (private 'photos' bucket, folder = user id, signed URLs). Badge themes are in lib/themes.ts plus `.theme-<id>` in globals.css plus the DB check constraint. Keep all three in sync. Themes use colors and patterns only, never logos or characters.
 3. Matching: score = sum over shared fandoms of the lower of the two levels (1/2/3), plus 1 per shared category. Likes table; a match is a mutual like.
 4. Icebreakers: fandom trivia duel; link out to Roll20 and board game sites for now
 5. Safety + beta: blocks_reports, admin mod queue, code of conduct page
