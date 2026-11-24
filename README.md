@@ -22,7 +22,8 @@ A dating app for the geek community: gamers, cosplayers, tabletop players, anime
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: your anon public key
 4. Click **Deploy**. You'll get a link like `thecon.vercel.app`.
 5. **Back in Supabase:** go to **Authentication > URL Configuration**. Set **Site URL** to your Vercel link, and add `https://YOUR-SITE.vercel.app/auth/callback` under **Redirect URLs**.
-6. Visit your site, get a badge, and click the link in the confirmation email.
+6. Still in Supabase, open **Authentication > Emails > Confirm signup**. Replace `{{ .ConfirmationURL }}` with `{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=email` so the email link works on any device or browser.
+7. Visit your site, get a badge, and click the link in the confirmation email.
 
 Every push to `main` redeploys automatically.
 
