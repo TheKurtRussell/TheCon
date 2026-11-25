@@ -10,6 +10,17 @@ import { saveProfile } from "../actions";
 const PRONOUNS = ["she/her", "he/him", "they/them", "she/they", "he/they", "any pronouns", "ask me"];
 const GENDERS = ["Woman", "Man", "Non-binary", "Genderfluid", "Agender", "Trans woman", "Trans man", "Two-spirit", "Questioning"];
 const LOOKING_FOR = ["Player two (something serious)", "Dating, see where it goes", "Friends first", "Con buddy", "Still figuring it out"];
+const GROUPS_SHOW = [
+  { value: "everyone", label: "Everyone" },
+  { value: "women", label: "Women" },
+  { value: "men", label: "Men" },
+  { value: "nonbinary", label: "Non-binary people" },
+];
+const GROUPS_APPEAR = [
+  { value: "women", label: "Women" },
+  { value: "men", label: "Men" },
+  { value: "nonbinary", label: "Non-binary people" },
+];
 const ALIGNMENTS = [
   "Lawful Good", "Neutral Good", "Chaotic Good",
   "Lawful Neutral", "True Neutral", "Chaotic Neutral",
@@ -30,11 +41,12 @@ export default async function EditProfilePage({
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const [{ data: profile }, { data: fandoms, error: fandomsError }, { data: mine }, { data: photos }] = await Promise.all([
+  const [{ data: profile }, { data: fandoms, error: fandomsError }, { data: mine }, { data: photos }, { data: prefs }] = await Promise.all([
     supabase.from("profiles").select("*").eq("id", user.id).maybeSingle(),
     supabase.from("fandoms").select("id, name, category").order("category").order("sort"),
     supabase.from("profile_fandoms").select("fandom_id, level").eq("profile_id", user.id),
     supabase.from("photos").select("id, path").eq("profile_id", user.id).order("position").order("created_at"),
+    supabase.from("profile_private").select("appear_in, show_me, age_min, age_max").eq("id", user.id).maybeSingle(),
   ]);
 
   // Photos are private, so we make short-lived links to show them.
@@ -54,6 +66,10 @@ export default async function EditProfilePage({
   const v = (key: string) => ((p as Record<string, unknown>)[key] as string | null) ?? "";
   const currentTheme = v("badge_theme") || "classic";
   const dbProblem = fandomsError?.message ?? null;
+  const appearIn: string[] = (prefs?.appear_in as string[] | undefined) ?? [];
+  const showMe: string[] = (prefs?.show_me as string[] | undefined) ?? ["everyone"];
+  const ageMin = Number(prefs?.age_min ?? 18);
+  const ageMax = Number(prefs?.age_max ?? 99);
 
   return (
     <>
@@ -171,6 +187,47 @@ export default async function EditProfilePage({
                   <input name="hill_to_die_on" maxLength={200} defaultValue={v("hill_to_die_on")} />
                 </label>
               </div>
+            </fieldset>
+
+            <fieldset className="card" id="meet">
+              <legend className="legend">Who I want to meet</legend>
+              <input type="hidden" name="prefs_present" value="1" />
+              <div className="field-grid">
+                <div className="field">
+                  <span>Show me</span>
+                  <div className="check-list">
+                    {GROUPS_SHOW.map((g) => (
+                      <label key={g.value} className="check">
+                        <input type="checkbox" name="show_me" value={g.value} defaultChecked={showMe.includes(g.value)} />
+                        <span>{g.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+                <div className="field">
+                  <span>Show me to people looking for</span>
+                  <div className="check-list">
+                    {GROUPS_APPEAR.map((g) => (
+                      <label key={g.value} className="check">
+                        <input type="checkbox" name="appear_in" value={g.value} defaultChecked={appearIn.includes(g.value)} />
+                        <span>{g.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+                <label className="field">
+                  Youngest age
+                  <input type="number" name="age_min" min={18} max={120} defaultValue={ageMin} />
+                </label>
+                <label className="field">
+                  Oldest age
+                  <input type="number" name="age_max" min={18} max={120} defaultValue={ageMax} />
+                </label>
+              </div>
+              <p className="hint">
+                These choices are private. You&rsquo;ll only see someone, and they&rsquo;ll only see you, when both of your
+                choices line up. People who pick &ldquo;Everyone&rdquo; can see you whatever you choose here.
+              </p>
             </fieldset>
 
             <button type="submit" className="btn btn-hero save-btn">

@@ -4,7 +4,7 @@
 
 A dating app for the geek community: gamers, cosplayers, tabletop players, anime fans and superfans. People match on shared fandoms and break the ice by playing a game together.
 
-**Status:** Phase 2. Sign-up with an 18+ check, log-in, and profiles: fandom picker, themed badges, about-me fields and photos.
+**Status:** Phase 3. Profiles with themed badges, plus matching: a Discover feed ranked by shared fandoms, likes, matches, and block/report.
 
 ## Tech
 
@@ -24,7 +24,8 @@ A dating app for the geek community: gamers, cosplayers, tabletop players, anime
 5. **Back in Supabase:** go to **Authentication > URL Configuration**. Set **Site URL** to your Vercel link, and add `https://YOUR-SITE.vercel.app/auth/callback` under **Redirect URLs**.
 6. Still in Supabase, open **Authentication > Emails > Confirm signup**. Replace `{{ .ConfirmationURL }}` with `{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=email` so the email link works on any device or browser.
 7. **Set up the profile tables (Phase 2):** in Supabase, open **SQL Editor > New query**, paste everything from `supabase/phase2_profiles.sql`, and click **Run**. This creates the tables, the fandom list, the photo storage and the security rules. It's safe to run again.
-8. Visit your site, get a badge, and click the link in the confirmation email.
+8. **Set up matching (Phase 3):** run `supabase/phase3_matching.sql` the same way.
+9. Visit your site, get a badge, and click the link in the confirmation email.
 
 Every push to `main` redeploys automatically.
 
@@ -52,6 +53,10 @@ For local testing, also add `http://localhost:3000/auth/callback` to Supabase's 
 | `components/FandomPicker.tsx` | Category, fandom and fan-level dropdowns |
 | `components/PhotoManager.tsx` | Photo upload and removal |
 | `lib/themes.ts` | Badge theme list and fan levels |
+| `app/discover` | Discover feed (one profile at a time) plus like/pass/block/report actions |
+| `app/matches`, `app/people/[id]` | Your matches and a match's full profile |
+| `components/ProfileView.tsx` | Badge + About layout used on every profile page |
+| `components/SafetyMenu.tsx` | Block and report menu |
 | `supabase/*.sql` | Database scripts to run in the Supabase SQL Editor |
 | `app/auth/actions.ts` | Sign-up, log-in and log-out logic |
 | `app/auth/callback` | Where the confirmation email link lands |
@@ -70,6 +75,6 @@ For local testing, also add `http://localhost:3000/auth/callback` to Supabase's 
 
 1. ~~Setup: login and deploy~~
 2. ~~Profiles: fandom picker, badge themes, about-me fields, photos~~
-3. Matching: shared-fandom score, Discover feed, matches
+3. ~~Matching: shared-fandom score, Discover feed, matches, block/report~~
 4. Icebreakers: fandom trivia duel, then D&D and board games
-5. Safety + beta: block/report, moderation queue, code of conduct
+5. Safety + beta: moderation queue, code of conduct page, ID + selfie age verification through a provider (e.g. Stripe Identity, Persona, Veriff, Yoti). Never store ID images ourselves.

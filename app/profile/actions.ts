@@ -61,6 +61,27 @@ export async function saveProfile(formData: FormData) {
     await supabase.from("profile_private").upsert({ id: user.id, birthdate });
   }
 
+  // Matching preferences (private). Skipped quietly if Phase 3 isn't set up yet.
+  if (formData.get("prefs_present")) {
+    const groups = ["women", "men", "nonbinary"];
+    const appearIn = formData.getAll("appear_in").map(String).filter((g) => groups.includes(g));
+    let showMe = formData.getAll("show_me").map(String).filter((g) => [...groups, "everyone"].includes(g));
+    if (showMe.length === 0 || showMe.includes("everyone")) showMe = ["everyone"];
+    const clampAge = (v: FormDataEntryValue | null, fallback: number) => {
+      const n = Math.round(Number(v));
+      return Number.isFinite(n) && n > 0 ? Math.min(120, Math.max(18, n)) : fallback;
+    };
+    let ageMin = clampAge(formData.get("age_min"), 18);
+    let ageMax = clampAge(formData.get("age_max"), 99);
+    if (ageMin > ageMax) [ageMin, ageMax] = [ageMax, ageMin];
+
+    const { error: prefsError } = await supabase
+      .from("profile_private")
+      .update({ appear_in: appearIn, show_me: showMe, age_min: ageMin, age_max: ageMax })
+      .eq("id", user.id);
+    if (prefsError && prefsError.code !== "42703") back(`Couldn't save who you want to meet: ${prefsError.message}`);
+  }
+
   // Replace the fandom list with what's on the form ("fandomId:level").
   const seen = new Set<number>();
   const fandoms = formData

@@ -28,6 +28,6 @@ Put each change in a new `supabase/phaseN_*.sql` that's safe to re-run. The owne
 ## Phases
 1. Setup (done): auth, landing page, protected /home
 2. Profiles (done): supabase/phase2_profiles.sql. profiles (public fields + badge_theme), profile_private (birthdate, owner-only; others get age via profile_age()), fandoms (seeded, by category), profile_fandoms (level 1-3), photos (private 'photos' bucket, folder = user id, signed URLs). Badge themes are in lib/themes.ts plus `.theme-<id>` in globals.css plus the DB check constraint. Keep all three in sync. Themes use colors and patterns only, never logos or characters.
-3. Matching: score = sum over shared fandoms of the lower of the two levels (1/2/3), plus 1 per shared category. Likes table; a match is a mutual like.
+3. Matching (done): supabase/phase3_matching.sql. Private prefs on profile_private: appear_in (groups a person opts into: women/men/nonbinary), show_me (incl. 'everyone'), age_min/age_max (default 18-99). Visibility is mutual: both sides' choices must allow it. discover_profiles() score = sum of the lower fan level per shared fandom, plus 1 per category both have. record_swipe() returns true on a match; my_matches(); is_match(). Only matches can open /people/[id]. blocks hide people both ways via is_blocked_pair() in the profiles/photos/profile_fandoms select policies. reports table feeds the Phase 5 mod queue. Age is always shown on badges.
 4. Icebreakers: fandom trivia duel; link out to Roll20 and board game sites for now
-5. Safety + beta: blocks_reports, admin mod queue, code of conduct page
+5. Safety + beta: admin mod queue over reports, code of conduct page, ID + selfie age verification through a third-party provider (store only a verified flag, never ID images)
