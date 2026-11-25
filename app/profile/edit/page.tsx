@@ -30,7 +30,7 @@ export default async function EditProfilePage({
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const [{ data: profile }, { data: fandoms }, { data: mine }, { data: photos }] = await Promise.all([
+  const [{ data: profile }, { data: fandoms, error: fandomsError }, { data: mine }, { data: photos }] = await Promise.all([
     supabase.from("profiles").select("*").eq("id", user.id).maybeSingle(),
     supabase.from("fandoms").select("id, name, category").order("category").order("sort"),
     supabase.from("profile_fandoms").select("fandom_id, level").eq("profile_id", user.id),
@@ -53,7 +53,7 @@ export default async function EditProfilePage({
   const p = profile ?? {};
   const v = (key: string) => ((p as Record<string, unknown>)[key] as string | null) ?? "";
   const currentTheme = v("badge_theme") || "classic";
-  const tablesMissing = !fandoms;
+  const dbProblem = fandomsError?.message ?? null;
 
   return (
     <>
@@ -62,9 +62,10 @@ export default async function EditProfilePage({
         <div className="wrap edit-wrap">
           <h1 className="h2">{profile ? "Edit your badge" : "Make your badge"}</h1>
 
-          {tablesMissing && (
+          {dbProblem && (
             <p className="alert" role="alert">
-              The profile tables aren&rsquo;t set up yet. Run <code>supabase/phase2_profiles.sql</code> in the Supabase SQL Editor (see README).
+              The app can&rsquo;t read the profile tables yet ({dbProblem}). Make sure you&rsquo;ve run{" "}
+              <code>supabase/phase2_profiles.sql</code> and <code>supabase/phase2b_grants.sql</code> in the Supabase SQL Editor.
             </p>
           )}
           {error && (

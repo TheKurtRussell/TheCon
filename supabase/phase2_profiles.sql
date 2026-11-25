@@ -110,6 +110,13 @@ drop policy if exists "manage own photos" on public.photos;
 create policy "manage own photos" on public.photos
   for all to authenticated using (profile_id = auth.uid()) with check (profile_id = auth.uid());
 
+-- ---------- Let logged-in members reach these tables ----------
+-- (Newer Supabase projects require explicit grants; RLS above still applies.)
+grant usage on schema public to authenticated;
+grant select, insert, update, delete on public.profiles, public.profile_private,
+  public.profile_fandoms, public.photos to authenticated;
+grant select on public.fandoms to authenticated;
+
 -- ---------- Photo storage (private bucket, 5 MB, images only) ----------
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values ('photos', 'photos', false, 5242880, array['image/jpeg', 'image/png', 'image/webp'])
