@@ -4,7 +4,7 @@
 
 A dating app for the geek community: gamers, cosplayers, tabletop players, anime fans and superfans. People match on shared fandoms and break the ice by playing a game together.
 
-**Status:** Phase 5. Themed badges, matching, trivia duels, and safety: moderation queue, suspensions, verified badges, account deletion, and policy pages.
+**Status:** Phase 6. Themed badges, matching, trivia duels, safety tools, and live messaging between matches.
 
 ## Tech
 
@@ -29,8 +29,9 @@ A dating app for the geek community: gamers, cosplayers, tabletop players, anime
 10. **Set up safety tools (Phase 5):** run `supabase/phase5_safety.sql`. Then make yourself a moderator:
     `insert into admins (user_id) select id from auth.users where email = 'you@example.com' on conflict do nothing;`
     A **Moderation** link then appears in your menu.
-11. **Contact email:** in Vercel, add `NEXT_PUBLIC_CONTACT_EMAIL` (your support inbox) under Environment Variables, then redeploy.
-12. Visit your site, get a badge, and click the link in the confirmation email.
+11. **Set up messaging (Phase 6):** run `supabase/phase6_messaging.sql`.
+12. **Contact email:** in Vercel, add `NEXT_PUBLIC_CONTACT_EMAIL` (your support inbox) under Environment Variables, then redeploy.
+13. Visit your site, get a badge, and click the link in the confirmation email.
 
 Every push to `main` redeploys automatically.
 
@@ -63,6 +64,7 @@ For local testing, also add `http://localhost:3000/auth/callback` to Supabase's 
 | `components/ProfileView.tsx` | Badge + About layout used on every profile page |
 | `components/SafetyMenu.tsx` | Block and report menu |
 | `app/duel/[id]` | Fandom Trivia Duel: play, wait, results, rematch |
+| `app/chat/[id]`, `components/ChatThread.tsx` | Live chat with a match |
 | `app/admin` | Moderation queue (moderators only): notes, status, suspend, verify |
 | `app/conduct`, `app/safety`, `app/privacy`, `app/terms` | Code of Conduct, safety tips, privacy policy and terms (the last two are drafts) |
 | `lib/site.ts` | Contact email and policy date |
@@ -99,4 +101,5 @@ Use `null` instead of the `select` for a general geek question.
 3. ~~Matching: shared-fandom score, Discover feed, matches, block/report~~
 4. ~~Icebreakers: fandom trivia duel, Roll20 and Board Game Arena links, likes sent~~
 5. ~~Safety: moderation queue, suspensions, verified badges, account deletion, Code of Conduct, safety tips, privacy and terms drafts~~
-6. Next: messaging between matches; ID + selfie age verification through a provider (e.g. Stripe Identity, Persona, Veriff, Yoti) that sets the verified flag. Never store ID images ourselves. Have a lawyer review the privacy policy and terms before launch.
+6. ~~Messaging: live chat, unread badges, duel results posted to the chat~~
+7. Next: ID + selfie age verification through a provider (e.g. Stripe Identity, Persona, Veriff, Yoti) that sets the verified flag. Never store ID images ourselves. Have a lawyer review the privacy policy and terms before launch.

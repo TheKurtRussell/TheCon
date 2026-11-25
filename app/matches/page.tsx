@@ -31,6 +31,10 @@ export default async function MatchesPage({
   const { data, error: matchError } = await supabase.rpc("my_matches");
   const matches = (data ?? []) as Match[];
   const photos = await Promise.all(matches.map((m) => signedPhotoUrl(supabase, m.photo_path)));
+  const { data: unreadData } = await supabase.rpc("unread_counts");
+  const unreadBy = new Map(
+    ((unreadData ?? []) as { other_id: string; unread: number }[]).map((u) => [u.other_id, Number(u.unread)])
+  );
   const { data: sentData } = await supabase.rpc("my_likes_sent");
   const sent = (sentData ?? []) as { id: string; display_name: string; badge_theme: string; liked_at: string }[];
 
@@ -78,6 +82,10 @@ export default async function MatchesPage({
                       {m.age ? `, ${m.age}` : ""}
                     </span>
                     {m.city && <span className="match-card-city">{m.city}</span>}
+                  </Link>
+                  <Link href={`/chat/${m.id}`} className="btn match-chat">
+                    Message
+                    {unreadBy.get(m.id) ? <span className="nav-badge">{unreadBy.get(m.id)}</span> : null}
                   </Link>
                 </li>
               ))}

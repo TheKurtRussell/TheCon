@@ -134,6 +134,9 @@ export default async function DuelPage({
               <p style={{ margin: 0, fontSize: 17 }}>
                 Waiting for {them} to finish ({duel.their_count}/{duel.total}). Scores show once you&rsquo;ve both played.
               </p>
+              <Link href={`/chat/${duel.other_id}`} className="btn" style={{ marginTop: 16 }}>
+                Message {them}
+              </Link>
             </div>
           )}
 
@@ -147,12 +150,17 @@ export default async function DuelPage({
                       ? `${them} wins! You pick the snack.`
                       : "It's a tie! Split the snacks."}
                 </p>
-                <form action={startDuel}>
-                  <input type="hidden" name="other" value={duel.other_id} />
-                  <button type="submit" className="btn btn-hero">
-                    Rematch
-                  </button>
-                </form>
+                <div className="actions" style={{ marginTop: 0 }}>
+                  <form action={startDuel}>
+                    <input type="hidden" name="other" value={duel.other_id} />
+                    <button type="submit" className="btn btn-hero">
+                      Rematch
+                    </button>
+                  </form>
+                  <Link href={`/chat/${duel.other_id}`} className="btn">
+                    Talk about it
+                  </Link>
+                </div>
               </div>
 
               <ol className="review">

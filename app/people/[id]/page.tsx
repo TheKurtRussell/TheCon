@@ -96,7 +96,14 @@ export default async function PersonPage({ params }: { params: Promise<{ id: str
                 </div>
               </div>
             }
-            actions={<SafetyMenu target={id} name={name} back="/matches" />}
+            actions={
+              <>
+                <Link href={`/chat/${id}`} className="btn btn-hero">
+                  Message {name}
+                </Link>
+                <SafetyMenu target={id} name={name} back="/matches" />
+              </>
+            }
           />
         </div>
       </main>
