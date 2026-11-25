@@ -2,10 +2,20 @@ import Link from "next/link";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 
-export default function LandingPage() {
+export default async function LandingPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ deleted?: string }>;
+}) {
+  const { deleted } = await searchParams;
   return (
     <>
       <SiteHeader />
+      {deleted && (
+        <p className="alert wrap" role="status" style={{ margin: "16px auto", maxWidth: 1152 }}>
+          Your account has been deleted. Thanks for being part of The CON.
+        </p>
+      )}
       <main>
         <section className="hero dots">
           <div className="wrap">
@@ -118,10 +128,10 @@ export default function LandingPage() {
               </p>
             </div>
             <ul className="safety-list">
-              <li><strong>18+ only</strong>, with photo verification on the way</li>
+              <li><strong>18+ only</strong>, with verified badges and ID checks on the way</li>
               <li><strong>Block and report</strong> on every profile and chat</li>
               <li><strong>Your identity, your words:</strong> pronouns and gender in free text</li>
-              <li><strong>Real moderators</strong> and a code of conduct everyone agrees to</li>
+              <li><strong>Real moderators</strong> and a <Link href="/conduct">code of conduct</Link> everyone agrees to</li>
             </ul>
           </div>
         </section>

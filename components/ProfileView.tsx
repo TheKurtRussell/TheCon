@@ -38,6 +38,7 @@ export default function ProfileView({
           city={p.city}
           fandoms={data.fandoms}
           photoUrl={data.photoUrl}
+          verified={data.verified}
         />
         {actions && <div className="profile-actions">{actions}</div>}
       </div>

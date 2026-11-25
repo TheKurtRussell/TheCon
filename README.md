@@ -4,7 +4,7 @@
 
 A dating app for the geek community: gamers, cosplayers, tabletop players, anime fans and superfans. People match on shared fandoms and break the ice by playing a game together.
 
-**Status:** Phase 4. Themed badges, matching with block/report, and icebreakers: a Fandom Trivia Duel between matches, plus D&D and board game links.
+**Status:** Phase 5. Themed badges, matching, trivia duels, and safety: moderation queue, suspensions, verified badges, account deletion, and policy pages.
 
 ## Tech
 
@@ -26,7 +26,11 @@ A dating app for the geek community: gamers, cosplayers, tabletop players, anime
 7. **Set up the profile tables (Phase 2):** in Supabase, open **SQL Editor > New query**, paste everything from `supabase/phase2_profiles.sql`, and click **Run**. This creates the tables, the fandom list, the photo storage and the security rules. It's safe to run again.
 8. **Set up matching (Phase 3):** run `supabase/phase3_matching.sql` the same way.
 9. **Set up icebreakers (Phase 4):** run `supabase/phase4_icebreakers.sql` the same way.
-10. Visit your site, get a badge, and click the link in the confirmation email.
+10. **Set up safety tools (Phase 5):** run `supabase/phase5_safety.sql`. Then make yourself a moderator:
+    `insert into admins (user_id) select id from auth.users where email = 'you@example.com' on conflict do nothing;`
+    A **Moderation** link then appears in your menu.
+11. **Contact email:** in Vercel, add `NEXT_PUBLIC_CONTACT_EMAIL` (your support inbox) under Environment Variables, then redeploy.
+12. Visit your site, get a badge, and click the link in the confirmation email.
 
 Every push to `main` redeploys automatically.
 
@@ -59,6 +63,9 @@ For local testing, also add `http://localhost:3000/auth/callback` to Supabase's 
 | `components/ProfileView.tsx` | Badge + About layout used on every profile page |
 | `components/SafetyMenu.tsx` | Block and report menu |
 | `app/duel/[id]` | Fandom Trivia Duel: play, wait, results, rematch |
+| `app/admin` | Moderation queue (moderators only): notes, status, suspend, verify |
+| `app/conduct`, `app/safety`, `app/privacy`, `app/terms` | Code of Conduct, safety tips, privacy policy and terms (the last two are drafts) |
+| `lib/site.ts` | Contact email and policy date |
 | `supabase/*.sql` | Database scripts to run in the Supabase SQL Editor |
 | `app/auth/actions.ts` | Sign-up, log-in and log-out logic |
 | `app/auth/callback` | Where the confirmation email link lands |
@@ -91,4 +98,5 @@ Use `null` instead of the `select` for a general geek question.
 2. ~~Profiles: fandom picker, badge themes, about-me fields, photos~~
 3. ~~Matching: shared-fandom score, Discover feed, matches, block/report~~
 4. ~~Icebreakers: fandom trivia duel, Roll20 and Board Game Arena links, likes sent~~
-5. Safety + beta: moderation queue, code of conduct page, ID + selfie age verification through a provider (e.g. Stripe Identity, Persona, Veriff, Yoti). Never store ID images ourselves.
+5. ~~Safety: moderation queue, suspensions, verified badges, account deletion, Code of Conduct, safety tips, privacy and terms drafts~~
+6. Next: messaging between matches; ID + selfie age verification through a provider (e.g. Stripe Identity, Persona, Veriff, Yoti) that sets the verified flag. Never store ID images ourselves. Have a lawyer review the privacy policy and terms before launch.

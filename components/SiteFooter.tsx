@@ -1,3 +1,6 @@
+import Link from "next/link";
+import { CONTACT_EMAIL } from "@/lib/site";
+
 export default function SiteFooter() {
   return (
     <footer className="site-footer">
@@ -6,11 +9,11 @@ export default function SiteFooter() {
           THE CON
         </span>
         <nav aria-label="Footer" style={{ display: "flex", flexWrap: "wrap", gap: 20 }}>
-          {/* TODO: real pages for these before launch */}
-          <a href="#conduct">Code of conduct</a>
-          <a href="#privacy">Privacy</a>
-          <a href="#terms">Terms</a>
-          <a href="#contact">Contact</a>
+          <Link href="/conduct">Code of conduct</Link>
+          <Link href="/safety">Safety tips</Link>
+          <Link href="/privacy">Privacy</Link>
+          <Link href="/terms">Terms</Link>
+          <a href={`mailto:${CONTACT_EMAIL}`}>Contact</a>
         </nav>
       </div>
     </footer>

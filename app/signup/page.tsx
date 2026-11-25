@@ -50,7 +50,9 @@ export default async function SignupPage({
                 <input name="conduct" type="checkbox" required />
                 <span>
                   I&rsquo;m 18 or older and I agree to treat everyone at The CON with respect, per the{" "}
-                  <a href="#conduct">code of conduct</a>.
+                  <a href="/conduct" target="_blank" rel="noopener">code of conduct</a>, and I accept the{" "}
+                  <a href="/terms" target="_blank" rel="noopener">terms</a> and{" "}
+                  <a href="/privacy" target="_blank" rel="noopener">privacy policy</a>.
                 </span>
               </label>
               <button type="submit" className="btn btn-hero">

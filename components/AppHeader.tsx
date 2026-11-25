@@ -1,8 +1,12 @@
 import Link from "next/link";
 import { logOut } from "@/app/auth/actions";
+import { createClient } from "@/lib/supabase/server";
 
 // Header for logged-in pages.
-export default function AppHeader() {
+export default async function AppHeader() {
+  const supabase = await createClient();
+  const { data: isAdmin } = await supabase.rpc("is_admin");
+
   return (
     <header className="site-header">
       <div className="wrap">
@@ -13,6 +17,7 @@ export default function AppHeader() {
           <Link href="/discover">Discover</Link>
           <Link href="/matches">Matches</Link>
           <Link href="/profile">My badge</Link>
+          {isAdmin === true && <Link href="/admin">Moderation</Link>}
           <form action={logOut}>
             <button type="submit" className="link-button">
               Log out

@@ -21,6 +21,30 @@ function text(formData: FormData, key: string, max: number): string | null {
   return value === "" ? null : value;
 }
 
+// Permanently delete the signed-in member's account and everything in it.
+export async function deleteAccount(formData: FormData) {
+  if (String(formData.get("confirm") ?? "").trim().toUpperCase() !== "DELETE") {
+    back("To delete your account, type DELETE in the box.");
+  }
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  // Photo files first (the database can't remove storage files itself).
+  const { data: files } = await supabase.storage.from("photos").list(user.id, { limit: 100 });
+  if (files && files.length > 0) {
+    await supabase.storage.from("photos").remove(files.map((f: { name: string }) => `${user.id}/${f.name}`));
+  }
+
+  const { error } = await supabase.rpc("delete_my_account");
+  if (error) back(`Couldn't delete your account: ${error.message}`);
+
+  await supabase.auth.signOut();
+  redirect("/?deleted=1");
+}
+
 export async function saveProfile(formData: FormData) {
   const supabase = await createClient();
   const {

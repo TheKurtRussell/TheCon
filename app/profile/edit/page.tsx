@@ -5,7 +5,7 @@ import { BADGE_THEMES } from "@/lib/themes";
 import AppHeader from "@/components/AppHeader";
 import FandomPicker from "@/components/FandomPicker";
 import PhotoManager from "@/components/PhotoManager";
-import { saveProfile } from "../actions";
+import { deleteAccount, saveProfile } from "../actions";
 
 const PRONOUNS = ["she/her", "he/him", "they/them", "she/they", "he/they", "any pronouns", "ask me"];
 const GENDERS = ["Woman", "Man", "Non-binary", "Genderfluid", "Agender", "Trans woman", "Trans man", "Two-spirit", "Questioning"];
@@ -245,6 +245,24 @@ export default async function EditProfilePage({
               <p className="hint">Save your badge first, then you can add photos here.</p>
             )}
           </section>
+
+          {profile && (
+            <details className="card danger-zone" style={{ marginTop: 28 }}>
+              <summary className="legend">Delete my account</summary>
+              <p style={{ fontSize: 16, lineHeight: 1.5 }}>
+                This permanently deletes your badge, photos, matches and duels. It can&rsquo;t be undone.
+              </p>
+              <form action={deleteAccount} className="danger-form">
+                <label className="field">
+                  Type DELETE to confirm
+                  <input name="confirm" autoComplete="off" required />
+                </label>
+                <button type="submit" className="btn danger-btn">
+                  Delete my account forever
+                </button>
+              </form>
+            </details>
+          )}
         </div>
       </main>
     </>

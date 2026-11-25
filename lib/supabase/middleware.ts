@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { supabaseEnv } from "./env";
 
 // Pages that need you to be logged in.
-const PROTECTED_PREFIXES = ["/home", "/profile", "/discover", "/matches", "/people", "/duel"];
+const PROTECTED_PREFIXES = ["/home", "/profile", "/discover", "/matches", "/people", "/duel", "/admin"];
 
 // Keeps the login session fresh on every request and sends logged-out
 // visitors away from protected pages.
@@ -40,6 +40,17 @@ export async function updateSession(request: NextRequest) {
     url.pathname = "/login";
     url.search = "";
     return NextResponse.redirect(url);
+  }
+
+  // Suspended members only get the "account suspended" page.
+  if (user && isProtected) {
+    const { data: suspended } = await supabase.rpc("am_i_suspended");
+    if (suspended === true) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/suspended";
+      url.search = "";
+      return NextResponse.redirect(url);
+    }
   }
 
   if (user && (path === "/login" || path === "/signup")) {

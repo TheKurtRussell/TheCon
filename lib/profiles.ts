@@ -12,6 +12,7 @@ export type ProfileViewData = {
   fandoms: BadgeFandom[];
   photoUrl: string | null;
   age: number | null;
+  verified: boolean;
 };
 
 // Turns a private photo path into a link that works for an hour.
@@ -27,10 +28,11 @@ export async function loadProfileView(supabase: Client, id: string): Promise<Pro
   const { data: profile } = await supabase.from("profiles").select("*").eq("id", id).maybeSingle();
   if (!profile) return null;
 
-  const [{ data: picked }, { data: photos }, { data: age }] = await Promise.all([
+  const [{ data: picked }, { data: photos }, { data: age }, { data: verification }] = await Promise.all([
     supabase.from("profile_fandoms").select("level, fandoms(name)").eq("profile_id", id),
     supabase.from("photos").select("path").eq("profile_id", id).order("position").order("created_at").limit(1),
     supabase.rpc("profile_age", { pid: id }),
+    supabase.from("verifications").select("user_id").eq("user_id", id).maybeSingle(),
   ]);
 
   const fandoms: BadgeFandom[] = ((picked ?? []) as { level: number; fandoms: unknown }[])
@@ -48,5 +50,6 @@ export async function loadProfileView(supabase: Client, id: string): Promise<Pro
     fandoms,
     photoUrl: await signedPhotoUrl(supabase, photos?.[0]?.path),
     age: typeof age === "number" ? age : null,
+    verified: Boolean(verification),
   };
 }

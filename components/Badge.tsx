@@ -10,10 +10,11 @@ type Props = {
   city?: string | null;
   fandoms: BadgeFandom[];
   photoUrl?: string | null;
+  verified?: boolean;
 };
 
 // The convention-badge card. Its colors come from the `theme-<id>` class.
-export default function Badge({ theme, name, age, pronouns, city, fandoms, photoUrl }: Props) {
+export default function Badge({ theme, name, age, pronouns, city, fandoms, photoUrl, verified }: Props) {
   const top = [...fandoms].sort((a, b) => b.level - a.level).slice(0, 6);
   const details = [pronouns, city].filter(Boolean).join(" · ");
 
@@ -23,7 +24,7 @@ export default function Badge({ theme, name, age, pronouns, city, fandoms, photo
       <article className={`cbadge theme-${theme}`} aria-label={`${name}'s badge`}>
         <div className="cbadge-top">
           <span className="display" style={{ fontSize: 26 }}>THE CON</span>
-          <span style={{ fontWeight: 800, fontSize: 12, letterSpacing: 1 }}>ATTENDEE</span>
+          <span style={{ fontWeight: 800, fontSize: 12, letterSpacing: 1 }}>{verified ? "✓ VERIFIED" : "ATTENDEE"}</span>
         </div>
         <div className="cbadge-body">
           {photoUrl ? (
