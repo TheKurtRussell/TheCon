@@ -4,7 +4,7 @@
 
 A dating app for the geek community: gamers, cosplayers, tabletop players, anime fans and superfans. People match on shared fandoms and break the ice by playing a game together.
 
-**Status:** Phase 3. Profiles with themed badges, plus matching: a Discover feed ranked by shared fandoms, likes, matches, and block/report.
+**Status:** Phase 4. Themed badges, matching with block/report, and icebreakers: a Fandom Trivia Duel between matches, plus D&D and board game links.
 
 ## Tech
 
@@ -25,7 +25,8 @@ A dating app for the geek community: gamers, cosplayers, tabletop players, anime
 6. Still in Supabase, open **Authentication > Emails > Confirm signup**. Replace `{{ .ConfirmationURL }}` with `{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=email` so the email link works on any device or browser.
 7. **Set up the profile tables (Phase 2):** in Supabase, open **SQL Editor > New query**, paste everything from `supabase/phase2_profiles.sql`, and click **Run**. This creates the tables, the fandom list, the photo storage and the security rules. It's safe to run again.
 8. **Set up matching (Phase 3):** run `supabase/phase3_matching.sql` the same way.
-9. Visit your site, get a badge, and click the link in the confirmation email.
+9. **Set up icebreakers (Phase 4):** run `supabase/phase4_icebreakers.sql` the same way.
+10. Visit your site, get a badge, and click the link in the confirmation email.
 
 Every push to `main` redeploys automatically.
 
@@ -57,6 +58,7 @@ For local testing, also add `http://localhost:3000/auth/callback` to Supabase's 
 | `app/matches`, `app/people/[id]` | Your matches and a match's full profile |
 | `components/ProfileView.tsx` | Badge + About layout used on every profile page |
 | `components/SafetyMenu.tsx` | Block and report menu |
+| `app/duel/[id]` | Fandom Trivia Duel: play, wait, results, rematch |
 | `supabase/*.sql` | Database scripts to run in the Supabase SQL Editor |
 | `app/auth/actions.ts` | Sign-up, log-in and log-out logic |
 | `app/auth/callback` | Where the confirmation email link lands |
@@ -71,10 +73,22 @@ For local testing, also add `http://localhost:3000/auth/callback` to Supabase's 
   Use an existing category name, or a new one to create a new dropdown group.
 - **New badge theme:** add it to `lib/themes.ts`, add a `.theme-<id>` block in `app/globals.css`, and add the id to the `badge_theme` check in the database.
 
+## Adding trivia questions
+
+Run this in the Supabase SQL Editor (answer_index counts from 0, so 0 = the first choice):
+
+```sql
+insert into trivia_questions (fandom_id, question, choices, answer_index)
+values ((select id from fandoms where name = 'Doctor Who'),
+        'Your question here?', array['Choice A', 'Choice B', 'Choice C', 'Choice D'], 1);
+```
+
+Use `null` instead of the `select` for a general geek question.
+
 ## Roadmap
 
 1. ~~Setup: login and deploy~~
 2. ~~Profiles: fandom picker, badge themes, about-me fields, photos~~
 3. ~~Matching: shared-fandom score, Discover feed, matches, block/report~~
-4. Icebreakers: fandom trivia duel, then D&D and board games
+4. ~~Icebreakers: fandom trivia duel, Roll20 and Board Game Arena links, likes sent~~
 5. Safety + beta: moderation queue, code of conduct page, ID + selfie age verification through a provider (e.g. Stripe Identity, Persona, Veriff, Yoti). Never store ID images ourselves.

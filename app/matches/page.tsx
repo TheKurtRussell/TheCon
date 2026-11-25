@@ -31,6 +31,8 @@ export default async function MatchesPage({
   const { data, error: matchError } = await supabase.rpc("my_matches");
   const matches = (data ?? []) as Match[];
   const photos = await Promise.all(matches.map((m) => signedPhotoUrl(supabase, m.photo_path)));
+  const { data: sentData } = await supabase.rpc("my_likes_sent");
+  const sent = (sentData ?? []) as { id: string; display_name: string; badge_theme: string; liked_at: string }[];
 
   return (
     <>
@@ -80,6 +82,24 @@ export default async function MatchesPage({
                 </li>
               ))}
             </ul>
+          )}
+
+          {sent.length > 0 && (
+            <section className="likes-sent" aria-labelledby="sent-heading">
+              <h2 id="sent-heading" className="legend">Likes sent</h2>
+              <p className="hint" style={{ margin: "0 0 14px" }}>
+                You liked them. If they like you back, they&rsquo;ll move up to your matches.
+              </p>
+              <ul className="sent-list">
+                {sent.map((s) => (
+                  <li key={s.id} className={`sent-chip cbadge theme-${s.badge_theme}`}>
+                    <span className="cbadge-top">
+                      <span>{s.display_name}</span>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </section>
           )}
         </div>
       </main>
